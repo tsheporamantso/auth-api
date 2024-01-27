@@ -2,5 +2,5 @@ Rails.application.routes.draw do
   devise_for :users, controllers: {
     sessions: "users/sessions",
     registrations: "users/registrations"}
-  get 'members', to: 'members#index'
+  get '/member_details', to: 'members#index'
 end
