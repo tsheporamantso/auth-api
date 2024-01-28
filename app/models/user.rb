@@ -7,6 +7,8 @@ class User < ApplicationRecord
          :jwt_authenticatable, jwt_revocation_strategy: self
 
   has_many :companies
+
+  ROLES = %w{super_admin admin manager}
   
   def jwt_payload
     super
