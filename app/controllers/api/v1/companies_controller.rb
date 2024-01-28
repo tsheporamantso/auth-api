@@ -1,15 +1,15 @@
 class Api::V1::CompaniesController < ApiController
   
-  before_action :set_company, only: [:show, :edit]
+  before_action :set_company, only: [:show, :edit, :update, :destroy]
   
   def index
     # @companies = Company.all
     @companies = current_user.companies
-    render json: @companies 
+    render json: @companies, status: :ok 
   end
 
   def show
-    render json: @company
+    render json: @company, status: :ok
   end
 
   def new
@@ -18,7 +18,7 @@ class Api::V1::CompaniesController < ApiController
   end
 
   def create
-    @company = Company.new(company_params)
+    @company = current_user.companies.new(company_params)
 
     if @company.save
      render json: {
@@ -42,10 +42,8 @@ class Api::V1::CompaniesController < ApiController
   end
 
   def update
-    @company = Company.find(company_params)
-    # @company = current_user.companies.find(company_params)
 
-    if @company.update
+    if @company.update(company_params)
       render json: {
         status: {
           code: 200,
@@ -62,14 +60,29 @@ class Api::V1::CompaniesController < ApiController
     end
   end
 
+  def destroy
+    if @company.destroy
+    render json: {
+      status: {
+        code: 200,
+        message: 'Company deleted successfully'
+      }
+    }, status: :ok
+    else
+      render json: { data: "Something went wrong", status: 'failured'}
+    end
+  end
+
   private
 
   def set_company
     # @company = Company.find(params[id])
     @company = current_user.companies.find(params[:id])
+    rescue ActiveRecord::RecordNotFound => error
+      render json: error.message, status: :unathorized 
   end
 
   def company_params
-    params.require(:company).permit(:name, :address, :established_year, :user_id)
+    params.require(:company).permit(:name, :address, :established_year)
   end
 end
