@@ -8,6 +8,8 @@ class Ability
 
     if user.role == 'super_admin'
       can :manage, :all
+    elsif user.role == 'admin' || 'collaborator'
+      can [:read, :create, :update], Company, user_id: user.id
     else
       can :read, :all
     end
